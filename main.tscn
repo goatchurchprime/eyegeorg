@@ -1,0 +1,157 @@
+[gd_scene load_steps=10 format=3 uid="uid://u1x46ueiqdh7"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_vw4bn"]
+[ext_resource type="PackedScene" uid="uid://le3jbm5ioq1m" path="res://readyplayerme_avatar.glb" id="1_wmie1"]
+[ext_resource type="Material" uid="uid://bioy7137nx6cu" path="res://shaders/eyeball.tres" id="3_fbj5n"]
+
+[sub_resource type="Shader" id="Shader_ch0hk"]
+code = "// NOTE: Shader automatically converted from Godot Engine 4.3.stable's StandardMaterial3D.
+
+shader_type spatial;
+render_mode blend_mix, depth_draw_opaque, cull_disabled, diffuse_burley, specular_schlick_ggx;
+
+uniform vec4 albedo : source_color;
+
+uniform float roughness : hint_range(0.0, 1.0);
+
+uniform float specular : hint_range(0.0, 1.0, 0.01);
+uniform float metallic : hint_range(0.0, 1.0, 0.01);
+
+uniform float pupilrad = 0.07;
+uniform float irisrad = 0.16;
+uniform vec4 iriscolor : source_color = vec4(0.2,0.3,1.0,1.0);
+
+void fragment() {
+	float rad = length((UV - vec2(0.5,0.5)));
+	if (rad < pupilrad) {
+		ALBEDO = vec3(0.0,0.0,0.0);
+	} else if (rad < irisrad) {
+		ALBEDO = iriscolor.rgb;
+	} else {
+		ALBEDO = albedo.rgb;
+	}
+	ROUGHNESS = roughness;
+	SPECULAR = specular*5.0;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pgltv"]
+resource_local_to_scene = true
+resource_name = "Wolf3D_Eye"
+render_priority = 0
+shader = SubResource("Shader_ch0hk")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/roughness = 0.0
+shader_parameter/specular = 1.0
+shader_parameter/metallic = 0.97
+shader_parameter/pupilrad = 0.1
+shader_parameter/irisrad = 0.2
+shader_parameter/iriscolor = Color(0.2, 0.3, 1, 1)
+
+[sub_resource type="Environment" id="Environment_5a5sw"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_0ehl7"]
+size = Vector3(0.004, 0.004, 0.02)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a2gdx"]
+albedo_color = Color(1, 1, 0.0666667, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ymk64"]
+albedo_color = Color(0.745098, 0.686275, 0.164706, 1)
+
+[node name="main" type="Node3D"]
+script = ExtResource("1_vw4bn")
+
+[node name="readyplayerme_avatar" parent="." instance=ExtResource("1_wmie1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.69011, -0.115346)
+
+[node name="Skeleton3D" parent="readyplayerme_avatar/Armature" index="0"]
+bones/7/position = Vector3(0.031475, 0.087475, 0.080475)
+bones/7/rotation = Quaternion(-0.00352503, 0.000474975, 0.000474975, 1.00048)
+bones/9/rotation = Quaternion(-0.504936, -0.48948, 0.514703, -0.490439)
+bones/10/rotation = Quaternion(0.476682, 0.0426004, -0.0586192, 0.876084)
+bones/11/rotation = Quaternion(-0.0496499, 0.0232878, 0.220481, 0.973848)
+bones/13/rotation = Quaternion(0.168015, -0.00993266, 0.414887, 0.894171)
+bones/14/rotation = Quaternion(0.0505068, -0.0743272, -0.249844, 0.964107)
+bones/17/rotation = Quaternion(0.0907302, -0.0514911, 0.0710583, 0.992002)
+bones/22/rotation = Quaternion(0.127578, -0.00970948, 0.0430858, 0.990845)
+bones/23/rotation = Quaternion(0.201824, -0.022599, -0.0435925, 0.97819)
+bones/27/rotation = Quaternion(0.0390566, -0.00578875, 0.00189597, 0.999219)
+bones/29/rotation = Quaternion(0.0990383, -0.0710162, -0.155253, 0.980329)
+bones/30/rotation = Quaternion(0.121482, -0.210829, 0.0594756, 0.96812)
+bones/31/rotation = Quaternion(0.122705, -0.0119333, 0.0121579, 0.992297)
+bones/41/rotation = Quaternion(0.0907272, 0.0514874, -0.0710587, 0.992002)
+bones/46/rotation = Quaternion(0.127578, 0.00970743, -0.0430845, 0.990845)
+bones/51/rotation = Quaternion(0.0390606, 0.00579551, -0.00189742, 0.999218)
+bones/59/rotation = Quaternion(0.507441, 0.0166689, 0.00155898, 0.861524)
+bones/64/rotation = Quaternion(0.507441, -0.0166669, -0.0015554, 0.861524)
+
+[node name="EyeLeft" parent="readyplayerme_avatar/Armature/Skeleton3D" index="0"]
+surface_material_override/0 = ExtResource("3_fbj5n")
+
+[node name="EyeRight" parent="readyplayerme_avatar/Armature/Skeleton3D" index="1"]
+surface_material_override/0 = SubResource("ShaderMaterial_pgltv")
+
+[node name="Wolf3D_Head" parent="readyplayerme_avatar/Armature/Skeleton3D" index="4"]
+blend_shapes/eyeLookDownLeft = 0.3815
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.358493)
+fov = 60.0
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.609178, 0.550261, 0.390463)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_5a5sw")
+
+[node name="HSliderBody" type="HSlider" parent="."]
+offset_left = 13.0
+offset_top = 27.0
+offset_right = 605.0
+offset_bottom = 57.0
+value = 50.0
+
+[node name="HSliderLight" type="HSlider" parent="."]
+offset_left = 11.0
+offset_top = 138.0
+offset_right = 603.0
+offset_bottom = 157.0
+value = 50.0
+
+[node name="VSlider" type="VSlider" parent="."]
+offset_left = 43.0
+offset_top = 348.0
+offset_right = 88.0
+offset_bottom = 914.0
+value = 50.0
+
+[node name="Torch" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.916265, -0.400573, 0, 0.400573, 0.916265, -0.0250604, -0.0621634, 0.199969)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Torch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.02)
+mesh = SubResource("BoxMesh_0ehl7")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_a2gdx")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Torch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.04)
+spot_range = 1.0
+spot_angle = 4.0
+
+[node name="EyeMarker2" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0266414, 0.218099)
+visible = false
+
+[node name="EyeMarker" type="MeshInstance3D" parent="EyeMarker2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.02)
+mesh = SubResource("BoxMesh_0ehl7")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_ymk64")
+
+[connection signal="value_changed" from="HSliderBody" to="." method="_on_h_slider_value_changed"]
+[connection signal="value_changed" from="HSliderLight" to="." method="_on_h_slider_light_value_changed"]
+[connection signal="value_changed" from="VSlider" to="." method="_on_v_slider_value_changed"]
+
+[editable path="readyplayerme_avatar"]
