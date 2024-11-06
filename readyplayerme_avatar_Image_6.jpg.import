@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cy2o13hg7qi6f"
 path.s3tc="res://.godot/imported/readyplayerme_avatar_Image_6.jpg-6da5cb3efc31a7367e7405c6a33048c5.s3tc.ctex"
+path.etc2="res://.godot/imported/readyplayerme_avatar_Image_6.jpg-6da5cb3efc31a7367e7405c6a33048c5.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://readyplayerme_avatar_Image_6.jpg"
-dest_files=["res://.godot/imported/readyplayerme_avatar_Image_6.jpg-6da5cb3efc31a7367e7405c6a33048c5.s3tc.ctex"]
+dest_files=["res://.godot/imported/readyplayerme_avatar_Image_6.jpg-6da5cb3efc31a7367e7405c6a33048c5.s3tc.ctex", "res://.godot/imported/readyplayerme_avatar_Image_6.jpg-6da5cb3efc31a7367e7405c6a33048c5.etc2.ctex"]
 
 [params]
 
