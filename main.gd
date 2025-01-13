@@ -72,22 +72,26 @@ func _on_h_slider_value_changed(value):
 
 var torchdragoffset = Vector2(0,0)
 var torchz = 0
+var dragitem = null
 func _on_reset_light_pressed():
 	torchz = $Torch.position.z
 	torchdragoffset = Vector2(0,0)
+	dragitem = $Torch
 	dragtorch(Vector2(458, 917))
+	dragitem = null
 
 func downclick(eposition):
 	$RayCast3D.position = $Camera3D.project_ray_origin(eposition)
 	$RayCast3D.target_position = $Camera3D.project_position(eposition, 3.0) - $RayCast3D.position
 	$RayCast3D.force_raycast_update()
-	if $RayCast3D.get_collider() == $Torch:
-		torchdragoffset = $Camera3D.unproject_position($Torch.position) - eposition
-		torchz = $Torch.position.z
+	dragitem = $RayCast3D.get_collider()
+	if dragitem != null:
+		torchdragoffset = $Camera3D.unproject_position(dragitem.position) - eposition
+		torchz = dragitem.position.z
 		var dN = $Camera3D.project_ray_normal(torchdragoffset + eposition)
 		var dO = $Camera3D.project_ray_origin(torchdragoffset + eposition)
 		var dL = (torchz - dO.z)/dN.z
-		$Torch/CollisionShape3D/DragHighlight.visible = true
+		dragitem.get_node("CollisionShape3D/DragHighlight").visible = true
 		
 var torchfocusdist = 0.4
 var torchfocusup = 0.04
@@ -96,18 +100,22 @@ func dragtorch(eposition):
 	var dO = $Camera3D.project_ray_origin(torchdragoffset + eposition)
 	var dL = (torchz - dO.z)/dN.z
 	var torchfocus = $Camera3D.position - torchfocusdist*$Camera3D.basis.z + torchfocusup*$Camera3D.basis.y
-	$Torch.look_at_from_position(dO + dN*dL, torchfocus)
-
+	if dragitem == $Torch:
+		dragitem.look_at_from_position(dO + dN*dL, torchfocus)
+	else:
+		dragitem.position = dO + dN*dL
+		
 func _input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
 				downclick(event.position)
-			elif torchdragoffset != null:
-				$Torch/CollisionShape3D/DragHighlight.visible = false
+			elif dragitem != null:
+				dragitem.get_node("CollisionShape3D/DragHighlight").visible = false
+				dragitem = null
 				
 	elif event is InputEventMouseMotion:
-		if $Torch/CollisionShape3D/DragHighlight.visible:
+		if dragitem != null:
 			dragtorch(event.position)
 
 func _on_condition_item_selected(index):
