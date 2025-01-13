@@ -135,6 +135,30 @@ offset_right = 584.0
 offset_bottom = 37.0
 text = "Reset Light"
 
+[node name="Condition" type="OptionButton" parent="."]
+offset_left = 116.0
+offset_top = 10.0
+offset_right = 261.0
+offset_bottom = 41.0
+selected = 0
+item_count = 5
+popup/item_0/text = "Okay"
+popup/item_1/text = "Left Restricted"
+popup/item_1/id = 1
+popup/item_2/text = "Left Deviant"
+popup/item_2/id = 2
+popup/item_3/text = "Right Deviant"
+popup/item_3/id = 3
+popup/item_4/text = "Right Restricted"
+popup/item_4/id = 4
+
+[node name="Label" type="Label" parent="Condition"]
+offset_left = -86.0
+offset_top = 3.0
+offset_right = -6.0
+offset_bottom = 26.0
+text = "Condition:"
+
 [node name="Torch" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.916265, -0.400573, 0, 0.400573, 0.916265, -0.0250604, -0.0621634, 0.199969)
 collision_layer = 8
@@ -178,5 +202,6 @@ mesh = SubResource("SphereMesh_crdhc")
 
 [connection signal="value_changed" from="HSliderBody" to="." method="_on_h_slider_value_changed"]
 [connection signal="pressed" from="ResetLight" to="." method="_on_reset_light_pressed"]
+[connection signal="item_selected" from="Condition" to="." method="_on_condition_item_selected"]
 
 [editable path="readyplayerme_avatar"]

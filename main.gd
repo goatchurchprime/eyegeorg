@@ -10,21 +10,40 @@ extends Node3D
 func _ready():
 	_on_reset_light_pressed()
 
-func seteyeattorch(eyebone):
+var angspeedpersec = deg_to_rad(80)
+var pupilradspeedpersec = 0.06
+
+func seteyeattorch(eyebone, deviantquat, restriction, delta):
 	var h = skel.global_transform*skel.get_bone_global_pose(eyebone)
 	var ztobealigned = $Torch.global_transform.origin - h.origin
+	ztobealigned = ztobealigned.normalized()
+	ztobealigned = deviantquat*ztobealigned
+	var mideyeaxis = $readyplayerme_avatar.basis.z
+	var eyedevcross = mideyeaxis.cross(ztobealigned)
+	var eyedevang = asin(eyedevcross.length())
+	if eyedevang > restriction:
+		ztobealigned = Quaternion(eyedevcross.normalized(), restriction)*mideyeaxis
+	
 	var zcurrent = h.basis.z
 	var crossprod = zcurrent.cross(ztobealigned)
 	if crossprod.length() > 0.0001:
-		var rot = Quaternion(crossprod.normalized(), asin(crossprod.length()))
+		var ang = asin(crossprod.length())
+		ang = min(ang, delta*angspeedpersec)
+		var rot = Quaternion(crossprod.normalized(), ang)
 		var rotorg = skel.get_bone_pose_rotation(eyebone)
 		var rotnew = rotorg*rot
 		skel.set_bone_pose_rotation(eyebone, rotnew)
-	h.origin += h.basis.z*0.04
+		#if eyebone == lefteyebone:
+		#	print("z", Basis(rotnew).z)
+	#h.origin += h.basis.z*0.04
 
+var lefteyedeviant = Quaternion()
+var righteyedeviant = Quaternion()
+var lefteyerestriction = deg_to_rad(25)
+var righteyerestriction = deg_to_rad(25)
 func _process(delta):
-	seteyeattorch(lefteyebone)
-	seteyeattorch(righteyebone)
+	seteyeattorch(lefteyebone, lefteyedeviant, lefteyerestriction, delta)
+	seteyeattorch(righteyebone, righteyedeviant, righteyerestriction, delta)
 	var h = skel.global_transform*skel.get_bone_global_pose(lefteyebone)
 	h.origin += h.basis.z*0.04
 	$EyeMarker2.transform = h
@@ -41,10 +60,12 @@ func _process(delta):
 	var pupilradr = lerp(0.06, 0.10, rl*5)
 
 	var puplilrad = min(pupilradl, pupilradr)
+	var orgpupilrad = $readyplayerme_avatar/Armature/Skeleton3D/EyeLeft.get_surface_override_material(0).get_shader_parameter("pupilrad")
+	var pupilradspeedperframe = pupilradspeedpersec*delta
+	if abs(puplilrad - orgpupilrad) > pupilradspeedperframe:
+		puplilrad = orgpupilrad + (pupilradspeedperframe if puplilrad > orgpupilrad else -pupilradspeedperframe)
 	$readyplayerme_avatar/Armature/Skeleton3D/EyeLeft.get_surface_override_material(0).set_shader_parameter("pupilrad", puplilrad)
 	$readyplayerme_avatar/Armature/Skeleton3D/EyeRight.get_surface_override_material(0).set_shader_parameter("pupilrad", puplilrad)
-
-	#print(Basis(skel.get_bone_pose_rotation(lefteyebone)).z.y)
 
 func _on_h_slider_value_changed(value):
 	$readyplayerme_avatar.rotation_degrees.y = (value - 50)/100.0 * 90
@@ -88,3 +109,21 @@ func _input(event):
 	elif event is InputEventMouseMotion:
 		if $Torch/CollisionShape3D/DragHighlight.visible:
 			dragtorch(event.position)
+
+func _on_condition_item_selected(index):
+	var c = $Condition.get_item_text(index).split(" ")
+	lefteyedeviant = Quaternion()
+	righteyedeviant = Quaternion()
+	if "Deviant" in c:
+		if "Left" in c:
+			lefteyedeviant = Quaternion(Vector3(0,1,0), deg_to_rad(20))
+		else:
+			righteyedeviant = Quaternion(Vector3(0,1,0), deg_to_rad(20))
+
+	lefteyerestriction = deg_to_rad(25)
+	righteyerestriction = deg_to_rad(25)
+	if "Restricted" in c:
+		if "Left" in c:
+			lefteyerestriction = deg_to_rad(10)
+		else:
+			righteyerestriction = deg_to_rad(10)
