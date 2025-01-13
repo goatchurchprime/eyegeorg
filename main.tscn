@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://u1x46ueiqdh7"]
+[gd_scene load_steps=14 format=3 uid="uid://u1x46ueiqdh7"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_vw4bn"]
 [ext_resource type="PackedScene" uid="uid://le3jbm5ioq1m" path="res://readyplayerme_avatar.glb" id="1_wmie1"]
@@ -56,8 +56,24 @@ size = Vector3(0.004, 0.004, 0.02)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a2gdx"]
 albedo_color = Color(1, 1, 0.0666667, 1)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_cv51s"]
+size = Vector3(0.008, 0.008, 0.01)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ao1wy"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.917647, 0.305882, 0, 0.521569)
+
+[sub_resource type="BoxMesh" id="BoxMesh_yfule"]
+material = SubResource("StandardMaterial3D_ao1wy")
+size = Vector3(0.008, 0.008, 0.01)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ymk64"]
 albedo_color = Color(0.745098, 0.686275, 0.164706, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_crdhc"]
+radius = 0.005
+height = 0.01
 
 [node name="main" type="Node3D"]
 script = ExtResource("1_vw4bn")
@@ -106,39 +122,42 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.609178, 0.550261, 0.390463)
 environment = SubResource("Environment_5a5sw")
 
 [node name="HSliderBody" type="HSlider" parent="."]
-offset_left = 13.0
-offset_top = 27.0
-offset_right = 605.0
-offset_bottom = 57.0
+offset_left = 14.0
+offset_top = 48.0
+offset_right = 606.0
+offset_bottom = 78.0
 value = 50.0
 
-[node name="HSliderLight" type="HSlider" parent="."]
-offset_left = 11.0
-offset_top = 138.0
-offset_right = 603.0
-offset_bottom = 157.0
-value = 50.0
+[node name="ResetLight" type="Button" parent="."]
+offset_left = 490.0
+offset_top = 6.0
+offset_right = 584.0
+offset_bottom = 37.0
+text = "Reset Light"
 
-[node name="VSlider" type="VSlider" parent="."]
-offset_left = 43.0
-offset_top = 348.0
-offset_right = 88.0
-offset_bottom = 914.0
-value = 50.0
-
-[node name="Torch" type="Node3D" parent="."]
+[node name="Torch" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.916265, -0.400573, 0, 0.400573, 0.916265, -0.0250604, -0.0621634, 0.199969)
+collision_layer = 8
+collision_mask = 0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Torch"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.02)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.01)
 mesh = SubResource("BoxMesh_0ehl7")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_a2gdx")
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Torch"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.04)
+shadow_enabled = true
 spot_range = 1.0
-spot_angle = 4.0
+spot_angle = 15.71
+spot_angle_attenuation = 6.72717
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Torch"]
+shape = SubResource("BoxShape3D_cv51s")
+
+[node name="DragHighlight" type="MeshInstance3D" parent="Torch/CollisionShape3D"]
+visible = false
+mesh = SubResource("BoxMesh_yfule")
 
 [node name="EyeMarker2" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0266414, 0.218099)
@@ -150,8 +169,14 @@ mesh = SubResource("BoxMesh_0ehl7")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_ymk64")
 
+[node name="RayCast3D" type="RayCast3D" parent="."]
+enabled = false
+collision_mask = 8
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RayCast3D"]
+mesh = SubResource("SphereMesh_crdhc")
+
 [connection signal="value_changed" from="HSliderBody" to="." method="_on_h_slider_value_changed"]
-[connection signal="value_changed" from="HSliderLight" to="." method="_on_h_slider_light_value_changed"]
-[connection signal="value_changed" from="VSlider" to="." method="_on_v_slider_value_changed"]
+[connection signal="pressed" from="ResetLight" to="." method="_on_reset_light_pressed"]
 
 [editable path="readyplayerme_avatar"]
