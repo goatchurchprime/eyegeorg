@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://u1x46ueiqdh7"]
+[gd_scene load_steps=19 format=3 uid="uid://u1x46ueiqdh7"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_vw4bn"]
 [ext_resource type="PackedScene" uid="uid://le3jbm5ioq1m" path="res://readyplayerme_avatar.glb" id="1_wmie1"]
@@ -49,12 +49,50 @@ shader_parameter/irisrad = 0.2
 shader_parameter/iriscolor = Color(0.2, 0.3, 1, 1)
 
 [sub_resource type="Environment" id="Environment_5a5sw"]
+background_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g31iv"]
+albedo_color = Color(0.717647, 0.737255, 0.831373, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_m7o0w"]
+material = SubResource("StandardMaterial3D_g31iv")
+size = Vector2(2, 5)
 
 [sub_resource type="BoxMesh" id="BoxMesh_0ehl7"]
 size = Vector3(0.004, 0.004, 0.02)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a2gdx"]
 albedo_color = Color(1, 1, 0.0666667, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cv51s"]
+size = Vector3(0.008, 0.008, 0.01)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ao1wy"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.917647, 0.305882, 0, 0.521569)
+
+[sub_resource type="BoxMesh" id="BoxMesh_yfule"]
+material = SubResource("StandardMaterial3D_ao1wy")
+size = Vector3(0.008, 0.008, 0.01)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_axf6f"]
+albedo_color = Color(0.344076, 0.344076, 0.344076, 1)
+roughness = 0.32
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_c86iv"]
+height = 0.01
+radius = 0.04
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_k1cbm"]
+material = SubResource("StandardMaterial3D_ao1wy")
+top_radius = 0.03
+bottom_radius = 0.03
+height = 0.01
+
+[sub_resource type="SphereMesh" id="SphereMesh_crdhc"]
+radius = 0.005
+height = 0.01
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ymk64"]
 albedo_color = Color(0.745098, 0.686275, 0.164706, 1)
@@ -105,40 +143,108 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.609178, 0.550261, 0.390463)
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_5a5sw")
 
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WorldEnvironment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0723336, 0, -0.697062)
+mesh = SubResource("QuadMesh_m7o0w")
+
 [node name="HSliderBody" type="HSlider" parent="."]
-offset_left = 13.0
-offset_top = 27.0
-offset_right = 605.0
-offset_bottom = 57.0
+offset_left = 14.0
+offset_top = 48.0
+offset_right = 606.0
+offset_bottom = 78.0
 value = 50.0
 
-[node name="HSliderLight" type="HSlider" parent="."]
-offset_left = 11.0
-offset_top = 138.0
-offset_right = 603.0
-offset_bottom = 157.0
-value = 50.0
+[node name="ResetLight" type="Button" parent="."]
+offset_left = 490.0
+offset_top = 6.0
+offset_right = 584.0
+offset_bottom = 37.0
+text = "Reset Light"
 
-[node name="VSlider" type="VSlider" parent="."]
-offset_left = 43.0
-offset_top = 348.0
-offset_right = 88.0
-offset_bottom = 914.0
-value = 50.0
+[node name="Condition" type="OptionButton" parent="."]
+offset_left = 116.0
+offset_top = 10.0
+offset_right = 261.0
+offset_bottom = 41.0
+selected = 0
+item_count = 5
+popup/item_0/text = "Okay"
+popup/item_1/text = "Left Restricted"
+popup/item_1/id = 1
+popup/item_2/text = "Left Deviant"
+popup/item_2/id = 2
+popup/item_3/text = "Right Deviant"
+popup/item_3/id = 3
+popup/item_4/text = "Right Restricted"
+popup/item_4/id = 4
 
-[node name="Torch" type="Node3D" parent="."]
+[node name="Label" type="Label" parent="Condition"]
+offset_left = -86.0
+offset_top = 3.0
+offset_right = -6.0
+offset_bottom = 26.0
+text = "Condition:"
+
+[node name="Torch" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.916265, -0.400573, 0, 0.400573, 0.916265, -0.0250604, -0.0621634, 0.199969)
+collision_layer = 8
+collision_mask = 0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Torch"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.02)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.01)
 mesh = SubResource("BoxMesh_0ehl7")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_a2gdx")
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Torch"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.04)
+shadow_enabled = true
+shadow_bias = 0.003
 spot_range = 1.0
-spot_angle = 4.0
+spot_angle = 15.71
+spot_angle_attenuation = 6.72717
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Torch"]
+shape = SubResource("BoxShape3D_cv51s")
+
+[node name="DragHighlight" type="MeshInstance3D" parent="Torch/CollisionShape3D"]
+visible = false
+mesh = SubResource("BoxMesh_yfule")
+
+[node name="EyeCover" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0614058, 0, 0.0273331)
+collision_layer = 8
+collision_mask = 0
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="EyeCover"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_axf6f")
+radius = 0.03
+height = 0.01
+sides = 40
+
+[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="EyeCover/CSGCylinder3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00699288, -3.05668e-10)
+operation = 2
+radius = 0.025
+height = 0.01
+sides = 40
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EyeCover"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+shape = SubResource("CylinderShape3D_c86iv")
+
+[node name="DragHighlight" type="MeshInstance3D" parent="EyeCover/CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00543687, -2.37653e-10)
+visible = false
+mesh = SubResource("CylinderMesh_k1cbm")
+skeleton = NodePath("../../../Torch/CollisionShape3D")
+
+[node name="RayCast3D" type="RayCast3D" parent="."]
+enabled = false
+collision_mask = 8
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RayCast3D"]
+mesh = SubResource("SphereMesh_crdhc")
 
 [node name="EyeMarker2" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0266414, 0.218099)
@@ -151,7 +257,7 @@ skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_ymk64")
 
 [connection signal="value_changed" from="HSliderBody" to="." method="_on_h_slider_value_changed"]
-[connection signal="value_changed" from="HSliderLight" to="." method="_on_h_slider_light_value_changed"]
-[connection signal="value_changed" from="VSlider" to="." method="_on_v_slider_value_changed"]
+[connection signal="pressed" from="ResetLight" to="." method="_on_reset_light_pressed"]
+[connection signal="item_selected" from="Condition" to="." method="_on_condition_item_selected"]
 
 [editable path="readyplayerme_avatar"]
